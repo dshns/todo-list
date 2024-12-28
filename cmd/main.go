@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/dshns/todo-list/internal/database"
+	"github.com/dshns/todo-list/internal/handlers"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -24,10 +25,11 @@ func main() {
 		port = fmt.Sprintf(":%s", envPort)
 	}
 
+	h := handlers.NewTasksHandler()
 	router := chi.NewRouter()
 
 	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir("web"))))
-
+	router.Get("/api/nextdate", h.NextDate)
 	log.Printf("Server started on http://localhost%v", port)
 
 	if err := http.ListenAndServe(port, router); err != nil {
