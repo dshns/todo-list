@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/dshns/todo-list/internal/database"
 	"github.com/dshns/todo-list/internal/handlers"
-	"github.com/go-chi/chi/v5"
+	"github.com/dshns/todo-list/internal/repository"
+	"github.com/dshns/todo-list/internal/servises"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -25,14 +26,21 @@ func main() {
 		port = fmt.Sprintf(":%s", envPort)
 	}
 
-	h := handlers.NewTasksHandler()
-	router := chi.NewRouter()
+	webDir := "./web"
+	repo := repository.NewTaskRepository(connecter)
+	serv := servises.NewTaskServise(repo)
+	h := handlers.NewTasksHandler(serv)
 
-	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir("web"))))
-	router.Get("/api/nextdate", h.NextDate)
+	app := fiber.New()
+
+	app.Get("/api/nextdate", h.NextDate)
+	app.Post("/api/task", h.AddTask)
+
+	app.Static("/", webDir)
+
 	log.Printf("Server started on http://localhost%v", port)
-
-	if err := http.ListenAndServe(port, router); err != nil {
-		log.Fatalf("Server startup error: %v", err)
+	err = app.Listen(port)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
