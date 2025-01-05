@@ -35,6 +35,7 @@ func main() {
 
 	app.Get("/api/nextdate", h.NextDate)
 	app.Post("/api/task", h.AddTask)
+	app.Get("/api/tasks", h.GetAllTasks)
 
 	app.Static("/", webDir)
 

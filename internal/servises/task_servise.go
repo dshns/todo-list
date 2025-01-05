@@ -56,3 +56,12 @@ func (s *TaskServise) AddTask(task *models.Task) (int, error) {
 
 	return s.repositoryInst.AddTask(task)
 }
+
+func (s *TaskServise) GetAllTasks() ([]models.Task, error) {
+	tasks, err := s.repositoryInst.GetAllTasks()
+	if err != nil {
+		return nil, fmt.Errorf("failed get all tasks: %w", err)
+	}
+
+	return tasks, nil
+}

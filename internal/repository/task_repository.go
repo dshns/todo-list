@@ -34,3 +34,28 @@ func (r *TaskRepository) AddTask(task *models.Task) (int, error) {
 
 	return int(lastID), nil
 }
+
+func (r *TaskRepository) GetAllTasks() ([]models.Task, error) {
+	rows, err := r.storage.DB.Query("SELECT * FROM scheduler ORDER BY date ASC LIMIT 50")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all tasks: %w", err)
+	}
+
+	defer rows.Close()
+
+	var res []models.Task
+	for rows.Next() {
+		task := models.Task{}
+		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan task: %w", err)
+		}
+		res = append(res, task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

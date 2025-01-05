@@ -52,3 +52,12 @@ func (handler *tasksHandler) AddTask(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"id": id})
 }
+
+func (handler *tasksHandler) GetAllTasks(c *fiber.Ctx) error {
+	tasks, err := handler.serviceInst.GetAllTasks()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"tasks": tasks})
+}
