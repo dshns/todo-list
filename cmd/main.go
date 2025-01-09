@@ -34,8 +34,10 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/api/nextdate", h.NextDate)
-	app.Post("/api/task", h.AddTask)
+	app.Get("/api/task", h.GetTaskByID)
 	app.Get("/api/tasks", h.GetAllTasks)
+	app.Post("/api/task", h.AddTask)
+	app.Put("/api/task", h.EditingTask)
 
 	app.Static("/", webDir)
 

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/dshns/todo-list/internal/models"
@@ -59,5 +60,38 @@ func (handler *tasksHandler) GetAllTasks(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
+	if tasks == nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"tasks": []models.Task{}})
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"tasks": tasks})
+}
+
+func (handler *tasksHandler) EditingTask(c *fiber.Ctx) error {
+	var task models.Task
+	if err := c.BodyParser(&task); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	err := handler.serviceInst.EditingTask(&task)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+}
+
+func (handler *tasksHandler) GetTaskByID(c *fiber.Ctx) error {
+	stringID := c.Query("id")
+	num, err := strconv.Atoi(stringID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	task, err := handler.serviceInst.GetTaskByID(num)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(task)
 }

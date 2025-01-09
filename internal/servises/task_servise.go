@@ -51,7 +51,7 @@ func isCorrect(task *models.Task) error {
 
 func (s *TaskServise) AddTask(task *models.Task) (int, error) {
 	if err := isCorrect(task); err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed add task: %w", err)
 	}
 
 	return s.repositoryInst.AddTask(task)
@@ -64,4 +64,24 @@ func (s *TaskServise) GetAllTasks() ([]models.Task, error) {
 	}
 
 	return tasks, nil
+}
+
+func (s *TaskServise) EditingTask(task *models.Task) error {
+	if task.ID == "" {
+		return fmt.Errorf("the id field should not be empty")
+	}
+
+	if err := isCorrect(task); err != nil {
+		return fmt.Errorf("failed edit task: %w", err)
+	}
+
+	return s.repositoryInst.EditingTask(task)
+}
+
+func (s *TaskServise) GetTaskByID(id int) (*models.Task, error) {
+	if id <= 0 {
+		return nil, fmt.Errorf("the id field should be greater than 0")
+	}
+
+	return s.repositoryInst.GetTaskByID(id)
 }
