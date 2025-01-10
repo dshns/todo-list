@@ -38,6 +38,8 @@ func main() {
 	app.Get("/api/tasks", h.GetAllTasks)
 	app.Post("/api/task", h.AddTask)
 	app.Put("/api/task", h.EditingTask)
+	app.Post("/api/task/done", h.TaskDone)
+	app.Delete("/api/task", h.TaskDelete)
 
 	app.Static("/", webDir)
 

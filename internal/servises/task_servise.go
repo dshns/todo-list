@@ -85,3 +85,29 @@ func (s *TaskServise) GetTaskByID(id int) (*models.Task, error) {
 
 	return s.repositoryInst.GetTaskByID(id)
 }
+
+func (s *TaskServise) TaskDelete(id int) error {
+	if id <= 0 {
+		return fmt.Errorf("the id field should be greater than 0")
+	}
+
+	return s.repositoryInst.TaskDelete(id)
+}
+
+func (s *TaskServise) TaskDone(id int) error {
+	task, err := s.repositoryInst.GetTaskByID(id)
+	if err != nil {
+		return fmt.Errorf("faled get task by id")
+	}
+
+	if task.Repeat == "" {
+		return s.repositoryInst.TaskDelete(id)
+	} else {
+		task.Date, err = utils.NextDate(time.Now(), task.Date, task.Repeat)
+		if err != nil {
+			return fmt.Errorf("faled next date")
+		}
+
+		return s.repositoryInst.EditingTask(task)
+	}
+}

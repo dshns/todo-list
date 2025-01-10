@@ -99,3 +99,12 @@ func (r *TaskRepository) GetTaskByID(id int) (*models.Task, error) {
 
 	return &task, nil
 }
+
+func (r *TaskRepository) TaskDelete(id int) error {
+	_, err := r.storage.DB.Exec("DELETE from scheduler WHERE id =:id", sql.Named("id", id))
+	if err != nil {
+		return fmt.Errorf("failed to delete task: %w", err)
+	}
+
+	return nil
+}

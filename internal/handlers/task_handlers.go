@@ -95,3 +95,33 @@ func (handler *tasksHandler) GetTaskByID(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(task)
 }
+
+func (handler *tasksHandler) TaskDelete(c *fiber.Ctx) error {
+	stringID := c.Query("id")
+	num, err := strconv.Atoi(stringID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	err = handler.serviceInst.TaskDelete(num)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+}
+
+func (handler *tasksHandler) TaskDone(c *fiber.Ctx) error {
+	stringID := c.Query("id")
+	num, err := strconv.Atoi(stringID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	err = handler.serviceInst.TaskDone(num)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+}
